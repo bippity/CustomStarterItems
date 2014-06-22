@@ -212,6 +212,16 @@ namespace CustomStarterItems
                             player.TPlayer.statLifeMax = 100;
                             player.TPlayer.statMana = 20;
                             player.TPlayer.statManaMax = 20;
+
+                            NetMessage.SendData(4, -1, -1, player.Name, player.Index, 0f, 0f, 0f, 0);
+                            NetMessage.SendData(42, -1, -1, "", player.Index, 0f, 0f, 0f, 0);
+                            NetMessage.SendData(16, -1, -1, "", player.Index, 0f, 0f, 0f, 0);
+                            NetMessage.SendData(50, -1, -1, "", player.Index, 0f, 0f, 0f, 0);
+
+                            NetMessage.SendData(4, player.Index, -1, player.Name, player.Index, 0f, 0f, 0f, 0);
+                            NetMessage.SendData(42, player.Index, -1, "", player.Index, 0f, 0f, 0f, 0);
+                            NetMessage.SendData(16, player.Index, -1, "", player.Index, 0f, 0f, 0f, 0);
+                            NetMessage.SendData(50, player.Index, -1, "", player.Index, 0f, 0f, 0f, 0);
                         }
 
                         if (player.Group.HasPermission("starteritems.reset.*") || player.Group.HasPermission("starteritems.reset.inventory")) //resets player's inventory
