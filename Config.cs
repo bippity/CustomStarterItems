@@ -17,18 +17,25 @@ namespace CustomStarterItems
         {
             public bool EnableStarterItems = true;
 
-            public int[] StarterItems = new int[]
+            public int startHealth = 100;
+
+            public int startMana = 20;
+
+            public string[] StarterItems = new string[]
             #region StarterItems 
             {
-                -13,    //Copper Pickaxe
-                24,     //Wooden Sword
-                -16,    //Copper Axe
-                76,     //Copper Greaves
-                80,     //Copper Chainmail
-                89      //Copper Helmet
+                "-13",     //Copper Pickaxe
+                "24",      //Wooden Sword
+                "-16",     //Copper Axe
+                "727",     //Wood Helmet
+                "728",      //Wood Breastplate
+                "729",      //Wood Greaves
+                "8:5",     //5 Torch
+                "28:3"     //3 Lesser Healing Potion
             };
             #endregion
         }
+
 
         public static void CreateConfig()
         {
