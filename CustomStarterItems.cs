@@ -37,7 +37,8 @@ namespace CustomStarterItems
 
             #region Initialize/Dispose
             public List<string> PlayerList = new List<string>();
-            public List<Item> StarterItems = new List<Item>();
+            public List<string> StarterItems = new List<string>();
+            public int startHealth, startMana;
 
             public override void Initialize()
             {
@@ -55,6 +56,16 @@ namespace CustomStarterItems
                 if (Config.contents.EnableStarterItems)
                 {
                     StarterItems = GetStarterItems(Config.contents.StarterItems);
+
+                    if (Config.contents.startHealth > 500)
+                        startHealth = 500;
+                    else
+                        startHealth = Config.contents.startHealth;
+
+                    if (Config.contents.startMana > 200)
+                        startMana = 200;
+                    else
+                        startMana = Config.contents.startMana;
                 }
             }
      
@@ -92,9 +103,7 @@ namespace CustomStarterItems
                 var user = TShock.Users.GetUserByName(player.Name);
 
                 if (user == null)
-                {
                     PlayerList.Add(player.Name);
-                }
             }
 
             private void PostLogin(PlayerPostLoginEventArgs args)
@@ -107,11 +116,40 @@ namespace CustomStarterItems
                 {
                     ClearInventory(player);
 
-                    foreach (Item item in StarterItems)
+                    player.TPlayer.statLife = startHealth;
+                    player.TPlayer.statLifeMax = startHealth;
+                    player.TPlayer.statMana = startMana;
+                    player.TPlayer.statManaMax = startMana;
+
+                    NetMessage.SendData(4, -1, -1, player.Name, player.Index, 0f, 0f, 0f, 0);
+                    NetMessage.SendData(42, -1, -1, "", player.Index, 0f, 0f, 0f, 0);
+                    NetMessage.SendData(16, -1, -1, "", player.Index, 0f, 0f, 0f, 0);
+                    NetMessage.SendData(50, -1, -1, "", player.Index, 0f, 0f, 0f, 0);
+
+                    NetMessage.SendData(4, player.Index, -1, player.Name, player.Index, 0f, 0f, 0f, 0);
+                    NetMessage.SendData(42, player.Index, -1, "", player.Index, 0f, 0f, 0f, 0);
+                    NetMessage.SendData(16, player.Index, -1, "", player.Index, 0f, 0f, 0f, 0);
+                    NetMessage.SendData(50, player.Index, -1, "", player.Index, 0f, 0f, 0f, 0);
+
+                    foreach (string item in StarterItems)
                     {
+                        Item give;
+                        int stack;
+
+                        if (item.Contains(":"))
+                        {
+                            give = TShock.Utils.GetItemById(int.Parse(item.Substring(0, item.IndexOf(":"))));
+                            stack = int.Parse(item.Substring(item.IndexOf(":")+1));
+                        }
+                        else
+                        {
+                            give = TShock.Utils.GetItemById(int.Parse(item));
+                            stack = 1;
+                        }
+
                         if (player.InventorySlotAvailable)
                         {
-                            player.GiveItem(item.netID, item.name, item.width, item.height, 1);
+                            player.GiveItem(give.netID, give.name, give.width, give.height, stack);
                         }
                     }
                     PlayerList.Remove(player.Name);
@@ -137,13 +175,13 @@ namespace CustomStarterItems
                 }
             }
 
-            private static List<Item> GetStarterItems(int[] id) //returns items from config
+            private static List<string> GetStarterItems(string[] id) //returns items from config
             {
-                List<Item> list = new List<Item>();
+                List<string> list = new List<string>();
 
-                foreach (int item in id)
+                foreach (string item in id)
                 {
-                    list.Add(TShock.Utils.GetItemById(item));
+                    list.Add(item);
                 }
                 return list;
             }
@@ -208,10 +246,20 @@ namespace CustomStarterItems
                     {
                         if (player.Group.HasPermission("starteritems.reset.*") || player.Group.HasPermission("starteritems.reset.stats")) //resets player's stats
                         {
-                            player.TPlayer.statLife = 100;
-                            player.TPlayer.statLifeMax = 100;
-                            player.TPlayer.statMana = 20;
-                            player.TPlayer.statManaMax = 20;
+                            if (Config.contents.EnableStarterItems)
+                            {
+                                player.TPlayer.statLife = startHealth;
+                                player.TPlayer.statLifeMax = startHealth;
+                                player.TPlayer.statMana = startMana;
+                                player.TPlayer.statManaMax = startMana;
+                            }
+                            else
+                            {
+                                player.TPlayer.statLife = 100;
+                                player.TPlayer.statLifeMax = 100;
+                                player.TPlayer.statMana = 20;
+                                player.TPlayer.statManaMax = 20;
+                            }
 
                             NetMessage.SendData(4, -1, -1, player.Name, player.Index, 0f, 0f, 0f, 0);
                             NetMessage.SendData(42, -1, -1, "", player.Index, 0f, 0f, 0f, 0);
@@ -230,11 +278,25 @@ namespace CustomStarterItems
 
                             if (Config.contents.EnableStarterItems)
                             {
-                                foreach (Item item in StarterItems)
+                                foreach (string item in StarterItems)
                                 {
+                                    Item give;
+                                    int stack;
+                                   
+                                    if (item.Contains(":"))
+                                    {
+                                        give = TShock.Utils.GetItemById(int.Parse(item.Substring(0, item.IndexOf(":"))));
+                                        stack = int.Parse(item.Substring(item.IndexOf(":")+1));
+                                    }
+                                    else
+                                    {
+                                        give = TShock.Utils.GetItemById(int.Parse(item));
+                                        stack = 1;
+                                    }
+
                                     if (player.InventorySlotAvailable)
                                     {
-                                        player.GiveItem(item.netID, item.name, item.width, item.height, 1);
+                                        player.GiveItem(give.netID, give.name, give.width, give.height, stack);
                                     }
                                 }
                             }
