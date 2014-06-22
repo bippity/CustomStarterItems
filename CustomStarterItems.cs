@@ -45,7 +45,7 @@ namespace CustomStarterItems
                 ServerApi.Hooks.NetGreetPlayer.Register(this, OnGreet);
                 PlayerHooks.PlayerPostLogin += PostLogin;
 
-                Commands.ChatCommands.Add(new Command(new List<string>() { "starteritems.reset.*", "starteritems.reset.inventory", "starteritems.reset.stats" }, ResetCharacter, "resetcharacter"));
+                Commands.ChatCommands.Add(new Command(new List<string>() { "starteritems.reset.*", "starteritems.reset.stats" }, ResetCharacter, "resetcharacter"));
 
                 if (!Config.ReadConfig())
                 {
@@ -214,8 +214,6 @@ namespace CustomStarterItems
                             player.TPlayer.statManaMax = 20;
                         }
 
-                        if (player.Group.HasPermission("starteritems.reset.*") || player.Group.HasPermission("starteritems.reset.inventory")) //resets player's inventory
-                        {
                             ClearInventory(player);
 
                             if (Config.contents.EnableStarterItems)
@@ -237,8 +235,6 @@ namespace CustomStarterItems
                                     player.GiveItem(-15, "", 0, 0, 1); //copper shortsword
                                 }
                             }
-                        }
-
                         player.SendSuccessMessage("Character reset to default!");
                     }
                 }
