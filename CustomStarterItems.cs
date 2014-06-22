@@ -36,8 +36,8 @@ namespace CustomStarterItems
             #endregion
 
             #region Initialize/Dispose
+            public List<string> PlayerList = new List<string>();
             public List<Item> StarterItems = new List<Item>();
-            public bool newPlayer = false;
 
             public override void Initialize()
             {
@@ -93,10 +93,8 @@ namespace CustomStarterItems
 
                 if (user == null)
                 {
-                    newPlayer = true;
+                    PlayerList.Add(player.Name);
                 }
-                else
-                    newPlayer = false;
             }
 
             private void PostLogin(PlayerPostLoginEventArgs args)
@@ -105,7 +103,7 @@ namespace CustomStarterItems
                     return;
                 TSPlayer player = args.Player;
 
-                if (newPlayer && Config.contents.EnableStarterItems)
+                if (PlayerList.Contains(player.Name) && Config.contents.EnableStarterItems)
                 {
                     ClearInventory(player);
 
@@ -116,12 +114,13 @@ namespace CustomStarterItems
                             player.GiveItem(item.netID, item.name, item.width, item.height, 1);
                         }
                     }
+                    PlayerList.Remove(player.Name);
                 }
             }
 
-            private void CleanInventory(int Who)
+            private void CleanInventory(int Who) //original method from ClearInvSSC to prevent exploits
             {
-                if (!TShock.Config.ServerSideCharacter) //Checks if SSC is enabled
+                if (!TShock.Config.ServerSideCharacter)
                 {
                     Log.ConsoleError("[CustomStarterItems] This plugin will not work properly with ServerSidedCharacters disabled.");
                 }
@@ -138,7 +137,7 @@ namespace CustomStarterItems
                 }
             }
 
-            private static List<Item> GetStarterItems(int[] id)
+            private static List<Item> GetStarterItems(int[] id) //returns items from config
             {
                 List<Item> list = new List<Item>();
 
@@ -149,7 +148,7 @@ namespace CustomStarterItems
                 return list;
             }
 
-            private void ClearInventory(TSPlayer player)
+            private void ClearInventory(TSPlayer player) //The inventory clearing method from ClearInvSSC
             {
                 for (int i = 0; i < NetItem.maxNetInventory; i++)
                 {
