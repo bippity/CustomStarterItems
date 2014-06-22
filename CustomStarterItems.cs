@@ -59,11 +59,15 @@ namespace CustomStarterItems
 
                     if (Config.contents.startHealth > 500)
                         startHealth = 500;
+                    else if (Config.contents.startHealth < 100)
+                        startHealth = 100;
                     else
                         startHealth = Config.contents.startHealth;
 
                     if (Config.contents.startMana > 200)
                         startMana = 200;
+                    else if (Config.contents.startMana < 20)
+                        startMana = 20;
                     else
                         startMana = Config.contents.startMana;
                 }
