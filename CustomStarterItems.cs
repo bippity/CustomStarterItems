@@ -194,7 +194,7 @@ namespace CustomStarterItems
             {
                 for (int i = 0; i < NetItem.maxNetInventory; i++)
                 {
-                    if (i < NetItem.maxNetInventory - (NetItem.armorSlots + NetItem.dyeSlots))
+                    if (i < NetItem.maxNetInventory - (NetItem.armorSlots + NetItem.dyeSlots)) //main inventory excluding the special slots
                     {
                         player.TPlayer.inventory[i].netDefaults(0);
                     }
@@ -280,35 +280,39 @@ namespace CustomStarterItems
 
                             if (Config.contents.EnableStarterItems)
                             {
-                                foreach (string item in StarterItems)
-                                {
-                                    Item give;
-                                    int stack;
-                                   
-                                    if (item.Contains(":"))
+                                int slot = 0;
+                                    foreach (string item in StarterItems)
                                     {
-                                        give = TShock.Utils.GetItemById(int.Parse(item.Substring(0, item.IndexOf(":"))));
-                                        stack = int.Parse(item.Substring(item.IndexOf(":")+1));
-                                    }
-                                    else
-                                    {
-                                        give = TShock.Utils.GetItemById(int.Parse(item));
-                                        stack = 1;
-                                    }
+                                        Item give;
 
-                                    if (player.InventorySlotAvailable)
-                                    {
-                                        player.GiveItem(give.netID, give.name, give.width, give.height, stack);
+                                        if (item.Contains(":"))
+                                        {
+                                            give = TShock.Utils.GetItemById(int.Parse(item.Substring(0, item.IndexOf(":"))));
+                                            give.stack = int.Parse(item.Substring(item.IndexOf(":") + 1));
+                                        }
+                                        else
+                                        {
+                                            give = TShock.Utils.GetItemById(int.Parse(item));
+                                        }
+
+                                        if (player.InventorySlotAvailable)
+                                        {
+                                            player.TPlayer.inventory[slot] = give;
+                                            NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, string.Empty, player.Index, slot);
+                                            slot++;
+                                        }
                                     }
-                                }
                             }
                             else
                             {
                                 if (player.InventorySlotAvailable)
                                 {
-                                    player.GiveItem(-13, "", 0, 0, 1); //copper pickaxe
-                                    player.GiveItem(-16, "", 0, 0, 1); //copper axe
-                                    player.GiveItem(-15, "", 0, 0, 1); //copper shortsword
+                                    player.TPlayer.inventory[0] = TShock.Utils.GetItemById(-13);
+                                    player.TPlayer.inventory[1] = TShock.Utils.GetItemById(-16);
+                                    player.TPlayer.inventory[2] = TShock.Utils.GetItemById(-15);
+                                    NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, string.Empty, player.Index, 0);  //MsgType, ClientSomething, ClientSomething, string?, player, slot? what.
+                                    NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, string.Empty, player.Index, 1);
+                                    NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, string.Empty, player.Index, 2);
                                 }
                             }
                         player.SendSuccessMessage("Character reset to default!");
