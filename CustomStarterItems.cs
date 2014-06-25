@@ -46,7 +46,7 @@ namespace CustomStarterItems
                 ServerApi.Hooks.NetGreetPlayer.Register(this, OnGreet);
                 PlayerHooks.PlayerPostLogin += PostLogin;
 
-                Commands.ChatCommands.Add(new Command(new List<string>() { "starteritems.reset.*", "starteritems.reset.stats" }, ResetCharacter, "resetcharacter"));
+                Commands.ChatCommands.Add(new Command(new List<string>() {"starteritems.reset.stats", "starteritems.reset.inventory" }, ResetCharacter, "resetcharacter"));
 
                 if (!Config.ReadConfig())
                 {
@@ -115,6 +115,9 @@ namespace CustomStarterItems
                 if (args.Player == null)
                     return;
                 TSPlayer player = args.Player;
+
+                if (player.UserAccountName != player.Name)  //checks if player logs in as same name
+                    return;
 
                 if (PlayerList.Contains(player.Name) && Config.contents.EnableStarterItems)
                 {
