@@ -135,25 +135,26 @@ namespace CustomStarterItems
                     NetMessage.SendData(16, player.Index, -1, "", player.Index, 0f, 0f, 0f, 0);
                     NetMessage.SendData(50, player.Index, -1, "", player.Index, 0f, 0f, 0f, 0);
 
+                    int slot = 0;
                     foreach (string item in StarterItems)
                     {
                         Item give;
-                        int stack;
 
                         if (item.Contains(":"))
                         {
                             give = TShock.Utils.GetItemById(int.Parse(item.Substring(0, item.IndexOf(":"))));
-                            stack = int.Parse(item.Substring(item.IndexOf(":")+1));
+                            give.stack = int.Parse(item.Substring(item.IndexOf(":") + 1));
                         }
                         else
                         {
                             give = TShock.Utils.GetItemById(int.Parse(item));
-                            stack = 1;
                         }
 
                         if (player.InventorySlotAvailable)
                         {
-                            player.GiveItem(give.netID, give.name, give.width, give.height, stack);
+                            player.TPlayer.inventory[slot] = give;
+                            NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, string.Empty, player.Index, slot);
+                            slot++;
                         }
                     }
                     PlayerList.Remove(player.Name);
