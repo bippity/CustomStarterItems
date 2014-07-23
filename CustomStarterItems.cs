@@ -166,12 +166,12 @@ namespace CustomStarterItems
 
             private void CleanInventory(int Who) //original method from ClearInvSSC to prevent exploits
             {
-                if (!TShock.Config.ServerSideCharacter)
+                if (!Main.ServerSideCharacter)
                 {
                     Log.ConsoleError("[CustomStarterItems] This plugin will not work properly with ServerSidedCharacters disabled.");
                 }
 
-                if (TShock.Config.ServerSideCharacter && !TShock.Players[Who].IsLoggedIn)
+                if (Main.ServerSideCharacter && !TShock.Players[Who].IsLoggedIn)
                 {
                     var player = TShock.Players[Who];
                     player.TPlayer.SpawnX = -1;
@@ -250,7 +250,7 @@ namespace CustomStarterItems
                 TSPlayer player = args.Player;
                 if (player != null)
                 {
-                    if (TShock.Config.ServerSideCharacter)
+                    if (Main.ServerSideCharacter)
                     {
                         if (player.Group.HasPermission("starteritems.reset.*") || player.Group.HasPermission("starteritems.reset.stats")) //resets player's stats
                         {
